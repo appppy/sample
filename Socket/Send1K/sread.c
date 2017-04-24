@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <pthread.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -8,87 +10,109 @@
 #include <sys/ioctl.h>
 #include <errno.h>
 
-//#define LOGD(...)
-#define LOGD(...) printf(__VA_ARGS__)
+#if 1
+#define LOGD(fmt, ...) printf("[Reader]:" fmt, ## __VA_ARGS__)
+#else
+#define LOGD(fmt, ...)
+#endif
 
 #define SOCK_NAME "/tmp/test_socket"
-
 #define PACKET_SIZE 1024
 
-#define CYC_TIME 1000*1000
+static int  fd1 = -1;
+static int	fd2 = -1;
 
-#define CYC_TIME2 1000
+void cleanup_handler(void *arg) 
+{
+	if (fd1 >= 0) {
+		close(fd1);
+	}
+	if (fd2 >= 0) {
+		close(fd2);
+	}
+	unlink(SOCK_NAME);
+}
 
 int main(int argc, char *argv[])
 {
-	int    fd1,fd2;
 	struct sockaddr_un caddr, saddr;
 	int    len, val;
 	char   buf[PACKET_SIZE];
-
 	char   t[64];
+	int	   FLAG=0;
+
+	pthread_cleanup_push(cleanup_handler, NULL);
 
 	/* ソケットの作成 */
+	LOGD("SOCKET\n");
 	if ((fd1 = socket(PF_UNIX, SOCK_STREAM, 0)) < 0) {
 		perror("socket");
-		exit(-1);
-    }
+    } else {
+		FLAG=1;
+	}
 
-	unlink(SOCK_NAME);
-	memset(&saddr, 0, sizeof(saddr));
-    saddr.sun_family = PF_UNIX;
-    strcpy(saddr.sun_path, SOCK_NAME);
-    
 	/* ソケットバインド */
-	if (bind(fd1, (struct sockaddr *)&saddr, /
-					sizeof(saddr.sun_family) + strlen(SOCK_NAME)) < 0){
-        perror("bind");
-        exit(-1);
-    }
+	LOGD("BIND\n");
+	if (FLAG) {
+		unlink(SOCK_NAME);
+		memset(&saddr, 0, sizeof(saddr));
+    	saddr.sun_family = PF_UNIX;
+    	strcpy(saddr.sun_path, SOCK_NAME);
+		if (bind(fd1, (struct sockaddr *)&saddr,
+			sizeof(saddr.sun_family) + strlen(SOCK_NAME)) < 0){
+    	    perror("bind");
+    	} else {
+			FLAG=2;
+		}
+	}
 
 	/* ソケットリッスン */
-    if (listen(fd1, 1) < 0){
-        perror("listen");
-        exit(-1);
-    }
-
-    while (1) {
-		usleep(CYC_TIME);
-
-        // クライアントの接続を待つ
-    	len = sizeof(caddr);
-    	if ((fd2 = accept(fd1, (struct sockaddr *)&caddr, (socklen_t *)&len)) < 0){
-    		perror("accept");
-   		    exit(-1);
+	LOGD("LISTEN\n");
+	if (FLAG==2) {
+		if (listen(fd1, 1) < 0){
+		    perror("listen");
+		} else {
+			FLAG=3;
 		}
+	}
 
-		/* ソケット受信 */
-        int n;
-		while (1) {
-			usleep(CYC_TIME2);
-        	n = read(fd2, buf, sizeof(buf));
-        	if (n > 0 ) {
-            	LOGD("%d = read [%02x %02x %02x %02x %02x]\n", n, buf[0], buf[1], buf[2], buf[3], buf[4]);
-			} else if(n == 0) {
-				break;
-        	} else {
-            	perror("read");
-            	exit(-1);
+	if (FLAG==3) {
+		while(1) {
+    		/* クライアントの接続を待つ */
+			if (FLAG==3) {
+				LOGD("ACCEPT\n");
+			    len = sizeof(caddr);
+			    if ((fd2 = accept(fd1, (struct sockaddr *)&caddr, 
+					(socklen_t *)&len)) < 0){
+			    	perror("accept");
+				} else {
+					FLAG=4;
+				}
+			}
+
+			/* ソケット受信 */
+    		while (1) {
+				LOGD("READ\n");
+    		    int n;
+    		    n = read(fd2, buf, sizeof(buf));
+    		    if (n > 0) {
+    		       	LOGD("READ (%d)\n", n);
+				} else if(n == 0) {
+					FLAG=3;
+					break;
+		        } else {
+    		       	perror("read");
+				}
 			}
 		}
-
-        // ソケットのクローズ
-        if (close(fd2) == -1)
-        {
-           perror("close");
-           exit(-1);
-        }
     }
-	printf("close \n");
 
 	/* ソケット終了 */
+	LOGD("CLOSE\n");
 	close(fd1);
-    close(fd2);
+	close(fd2);
+	unlink(SOCK_NAME);
+	pthread_cleanup_pop(0);
 
     return 0;
 }

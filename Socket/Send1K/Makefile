@@ -1,7 +1,8 @@
-CC=gcc
-CFLAG=-g
-READ_OBJ=sread.o
-WRITE_OBJ=swrite.o
+CC = gcc
+CFLAG = -g -Wall
+LIBRARIES = -pthread
+READ_OBJ = sread.o
+WRITE_OBJ = swrite.o
 
 all: sread swrite
 
@@ -11,9 +12,9 @@ clean:
 	rm sread.o
 	rm swrite.o
 
-read: $(READ_OBJ)
-	$(CC) -o sread $(READ_OBJ)
+sread: $(READ_OBJ)
+	$(CC) $(READ_OBJ) $(CFLAGS) $(LIBRARIES) -o sread
 
-write: $(WRITE_OBJ)
-	$(CC) -o swrite $(WRITE_OBJ)
+swrite: $(WRITE_OBJ)
+	$(CC) $(WRITE_OBJ) $(CFLAGS) $(LIBRARIES) -o swrite
 
