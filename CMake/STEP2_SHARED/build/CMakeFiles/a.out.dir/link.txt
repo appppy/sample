@@ -1,0 +1,1 @@
+/usr/bin/c++    -rdynamic CMakeFiles/a.out.dir/main.cpp.o  -o a.out -Wl,-rpath,/home/adachi/share/home/appy/documents/Sample/CMake/STEP2_SHARED/build libgreetings.so 

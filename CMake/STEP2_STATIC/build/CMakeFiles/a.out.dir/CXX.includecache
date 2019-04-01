@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/adachi/share/home/appy/documents/Sample/CMake/STEP2_STATIC/good_morning.hpp
+
+/home/adachi/share/home/appy/documents/Sample/CMake/STEP2_STATIC/hello.hpp
+
+/home/adachi/share/home/appy/documents/Sample/CMake/STEP2_STATIC/main.cpp
+hello.hpp
+/home/adachi/share/home/appy/documents/Sample/CMake/STEP2_STATIC/hello.hpp
+good_morning.hpp
+/home/adachi/share/home/appy/documents/Sample/CMake/STEP2_STATIC/good_morning.hpp
+

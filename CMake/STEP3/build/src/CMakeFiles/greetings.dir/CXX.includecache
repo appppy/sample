@@ -1,0 +1,22 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/good_morning.hpp
+
+/home/adachi/share/home/appy/documents/Sample/CMake/STEP3/src/good_morning.cpp
+iostream
+-
+good_morning.hpp
+/home/adachi/share/home/appy/documents/Sample/CMake/STEP3/src/good_morning.hpp
+
+/home/adachi/share/home/appy/documents/Sample/CMake/STEP3/src/hello.cpp
+iostream
+-
+hello.hpp
+/home/adachi/share/home/appy/documents/Sample/CMake/STEP3/src/hello.hpp
+
