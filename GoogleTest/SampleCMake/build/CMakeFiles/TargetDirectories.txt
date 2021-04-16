@@ -1,3 +1,0 @@
-/home/adachi/share/home/appy/documents/Sample/GoogleTest/SampleCMake/build/CMakeFiles/rebuild_cache.dir
-/home/adachi/share/home/appy/documents/Sample/GoogleTest/SampleCMake/build/CMakeFiles/mytest.dir
-/home/adachi/share/home/appy/documents/Sample/GoogleTest/SampleCMake/build/CMakeFiles/edit_cache.dir
