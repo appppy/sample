@@ -1,0 +1,14 @@
+diff -r new/include/sample.h old/include/sample.h
+1c1
+< abc
+\ ファイル末尾に改行がありません
+---
+> aaa
+\ ファイル末尾に改行がありません
+diff -r new/src/sample.c old/src/sample.c
+1c1
+< abc
+\ ファイル末尾に改行がありません
+---
+> aaa
+\ ファイル末尾に改行がありません
